@@ -1,8 +1,8 @@
 # mysh - A simple unix shell
 
 ## Group Members
-- ** Johann Ross Yap**
-- ** Renz Rendel De Arroz**
+- **Johann Ross Yap**
+- **Renz Rendel De Arroz**
 
 ## Overview
 `mysh` is a simple Unix shell implemented in C that demonstrates fundamental
