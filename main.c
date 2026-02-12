@@ -43,18 +43,12 @@ int main(void) {
             while (*dir == ' ') dir++; 
 
             if (strlen(dir) == 0) {
-               
-#ifdef _WIN32
-                dir = getenv("USERPROFILE"); 
-#else
-                dir = getenv("HOME");       
-#endif
                 if (dir == NULL) {
                     fprintf(stderr, "cd: Home directory not found\n");
                     continue;
                 }
             }
-
+            
             if (chdir(dir) != 0) {
                 perror("chdir");
             }
