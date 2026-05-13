@@ -2,6 +2,7 @@
 #define MYSH_H
 
 #include <stdbool.h>
+#include <sys/types.h>
 
 #define MAX_ARGS 256
 #define MAX_INPUT 1024
