@@ -1,10 +1,17 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11
+CFLAGS = -Wall -Wextra
 
-all: mysh
+mysh: mysh.o parser.o executor.o
+	$(CC) $(CFLAGS) -o mysh mysh.o parser.o executor.o
 
-mysh: main.c
-	$(CC) $(CFLAGS) main.c -o mysh
+mysh.o: mysh.c mysh.h
+	$(CC) $(CFLAGS) -c mysh.c
+
+parser.o: parser.c mysh.h
+	$(CC) $(CFLAGS) -c parser.c
+
+executor.o: executor.c mysh.h
+	$(CC) $(CFLAGS) -c executor.c
 
 clean:
-	rm -f mysh
+	rm -f *.o mysh
