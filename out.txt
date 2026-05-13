@@ -1,2 +1,3 @@
-test && cat out.txt
-a && echo b && cat out.txt
+test
+a
+b

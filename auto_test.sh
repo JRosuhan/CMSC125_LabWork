@@ -31,14 +31,14 @@ run_test() {
 # ---------------------------
 
 run_test "Echo command" "echo hello" "hello"
-run_test "Pwd command" "pwd" "/"
+run_test "Pwd command" "pwd" "CMSC125_LabWork"
 run_test "List files" "ls" ""
 
 # ---------------------------
 # BUILT-INS
 # ---------------------------
 
-run_test "CD command" "cd / && pwd" "/"
+run_test "CD command" "cd /\npwd" "/"
 run_test "Exit command" "exit" ""
 
 # ---------------------------
@@ -54,9 +54,9 @@ run_test "Invalid command" "fakecommand" "not found"
 echo "hello" > input.txt
 run_test "Input redirection" "wc -l < input.txt" "1"
 
-run_test "Output redirection" "echo test > out.txt && cat out.txt" "test"
+run_test "Output redirection" "echo test > out.txt\ncat out.txt" "test"
 
-run_test "Append redirection" "echo a >> out.txt && echo b >> out.txt && cat out.txt" "a"
+run_test "Append redirection" "echo a >> out.txt\necho b >> out.txt\ncat out.txt" "a"
 
 # ---------------------------
 # BACKGROUND JOBS
