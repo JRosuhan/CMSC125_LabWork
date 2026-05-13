@@ -12,7 +12,71 @@ int job_count = 0;
 int next_job_id = 1;
 
 int handle_builtin(Command *cmd) {
+    if (cmd->command == NULL) {
+        return -1;
+    }
 
+    if (strcmp(cmd->command, "exit") == 0) {
+        cleanup_background_jobs();
+        exit(0);
+    }
+    else if (strcmp(cmd->command, "cd") == 0) {
+        char *dir = cmd->args[1];
+        if (dir == NULL) {
+            dir = getenv("HOME");
+            if (dir == NULL) {
+                fprintf(stderr, "mysh: cd: HOME not set\n");
+                return 0;
+            }
+        }
+        if (chdir(dir) != 0) {
+            perror("mysh: cd");
+        }
+        return 0;
+    }
+    else if (strcmp(cmd->command, "pwd") == 0) {
+        char cwd[MAX_INPUT];
+        if (getcwd(cwd, sizeof(cwd)) != NULL) {
+            printf("%s\n", cwd);
+        }
+        else {
+            perror("mysh: pwd");
+        }
+        return 0;
+    }
+
+    return -1;
+}
+
+void execute_command(Command *cmd, char *original_input) {
+    if (cmd->command == NULL) {
+        return;
+    }
+
+    if (handle_builtin(cmd) == 0) {
+        return;
+    }
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("fork failed");
+        return;
+    }
+
+    if (pid == 0) {
+        if (cmd->input_file != NULL) {
+            int fd = open(cmd->input_file, O_RDONLY);
+            if (fd < 0) {
+                perror("open input file failed");
+                exit(1);
+            }
+            dup2(fd, STDIN_FILENO);
+            close(fd);
+        }
+
+        if (cmd->output_file != NULL) {
+            int flags = O_WRONLY | O_CREAT;
             if (cmd->append) {
                 flags |= O_APPEND;
             }
@@ -21,12 +85,10 @@ int handle_builtin(Command *cmd) {
             }
 
             int fd = open(cmd->output_file, flags, 0644);
-
             if (fd < 0) {
                 perror("open output file failed");
                 exit(1);
             }
-
             dup2(fd, STDOUT_FILENO);
             close(fd);
         }
@@ -37,9 +99,7 @@ int handle_builtin(Command *cmd) {
         exit(127);
     }
     else {
-
         if (cmd->background) {
-
             jobs[job_count].job_id = next_job_id;
             jobs[job_count].pid = pid;
             strcpy(jobs[job_count].command, original_input);
@@ -53,13 +113,11 @@ int handle_builtin(Command *cmd) {
             next_job_id++;
         }
         else {
-
             int status;
             waitpid(pid, &status, 0);
 
             if (WIFEXITED(status)) {
                 int exit_code = WEXITSTATUS(status);
-
                 if (exit_code != 0) {
                     printf("Command exited with code %d\n", exit_code);
                 }
